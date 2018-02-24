@@ -22,18 +22,18 @@ def convert2coco(caption_json, img_dir):
     non_existence_count = 0
 
     for ind, sample in enumerate(dataset):
-        path = os.path.join(img_dir, sample['image_id'])
-        if not os.path.isfile(path):
-            print('WARN: %s not exists, skip it.' % (path))
+        full_path = os.path.join(img_dir, sample['image_id'])
+        if not os.path.isfile(full_path):
+            print('WARN: %s not exists, skip it.' % (full_path))
             non_existence_count += 1
             continue
 
-        img = Image.open(path)
+        img = Image.open(full_path)
         width, height = img.size
 
         coco_img = {}
         coco_img[u'license'] = 0
-        coco_img[u'file_name'] = path
+        coco_img[u'file_name'] = os.path.split(img_dir)[-1]+'/'+sample['image_id']
         coco_img[u'width'] = width
         coco_img[u'height'] = height
         coco_img[u'date_captured'] = 0
@@ -59,7 +59,6 @@ def convert2coco(caption_json, img_dir):
 
 def convert2coco_val(caption_json, img_dir):
     dataset = json.load(open(caption_json, 'r'))
-    imgdir = img_dir
 
     coco = dict()
     coco[u'info'] = { u'desciption':u'AI challenger image caption in mscoco format'}
@@ -70,18 +69,18 @@ def convert2coco_val(caption_json, img_dir):
     non_existence_count = 0
 
     for ind, sample in enumerate(dataset):
-        img = Image.open(os.path.join(imgdir, sample['image_id']))
+        full_path = os.path.join(img_dir, sample['image_id'])
+        img = Image.open(full_path)
         width, height = img.size
 
-        path = os.path.split(img_dir)[-1]+'/'+sample['image_id']
-        if not os.path.isfile(path):
-            print('WARN: %s not exists, skip it.' % (path))
+        if not os.path.isfile(full_path):
+            print('WARN: %s not exists, skip it.' % (full_path))
             non_existence_count += 1
             continue
 
         coco_img = {}
         coco_img[u'license'] = 0
-        coco_img[u'file_name'] = path
+        coco_img[u'file_name'] = os.path.split(img_dir)[-1]+'/'+sample['image_id']
         coco_img[u'width'] = width
         coco_img[u'height'] = height
         coco_img[u'date_captured'] = 0
