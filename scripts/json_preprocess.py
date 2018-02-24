@@ -161,7 +161,7 @@ def convert2coco_eval(caption_json, img_dir):
         json.dump(coco, fid)
     print('Saved to {}'.format(output_file))
 
-def convert2coco_test(img_dir):
+def convert2coco_test(img_dir, root):
     coco = dict()
     coco[u'info'] = { u'desciption':u'AI challenger image caption in mscoco format'}
     coco[u'licenses'] = ['Unknown', 'Unknown']
@@ -182,7 +182,7 @@ def convert2coco_test(img_dir):
 
         print('{}/{}'.format(ind, len(os.listdir(img_dir))))
 
-    output_file = os.path.join('/data/liyuntao/DataSet', 'ai_challenger_test1.json')
+    output_file = os.path.join(root, 'ai_challenger_test1.json')
     with open(output_file, 'w') as fid:
         json.dump(coco, fid)
     print('Saved to {}'.format(output_file))
@@ -282,7 +282,7 @@ if __name__ == "__main__":
     convert2coco(train_caption_json, train_img_dir)
     convert2coco_val(val_caption_json, val_img_dir)
     # Create json file for testing
-    convert2coco_test(test_img_dir)
+    # - convert2coco_test(test_img_dir, root)
     # Create json file for evaluation
     convert2coco_eval(val_caption_json, val_img_dir)
     # Create json file for sentence label and image feature extraction
