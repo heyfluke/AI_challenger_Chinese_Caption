@@ -21,13 +21,21 @@ def convert2coco(caption_json, img_dir):
     coco[u'images'] = list()
     coco[u'annotations'] = list()
 
+    non_existence_count = 0
+
     for ind, sample in enumerate(dataset):
         img = Image.open(os.path.join(imgdir, sample['image_id']))
         width, height = img.size
 
+        path = os.path.split(img_dir)[-1]+'/'+sample['image_id']
+        if not os.path.isfile(path):
+            print('WARN: %s not exists, skip it.' % (path))
+            non_existence_count += 1
+            continue
+
         coco_img = {}
         coco_img[u'license'] = 0
-        coco_img[u'file_name'] = os.path.split(img_dir)[-1]+'/'+sample['image_id']
+        coco_img[u'file_name'] = path
         coco_img[u'width'] = width
         coco_img[u'height'] = height
         coco_img[u'date_captured'] = 0
@@ -48,6 +56,7 @@ def convert2coco(caption_json, img_dir):
     output_file = os.path.join(os.path.dirname(caption_json), 'coco_'+os.path.basename(caption_json))
     with open(output_file, 'w') as fid:
         json.dump(coco, fid)
+    print('non_existence_count', non_existence_count)
     print('Saved to {}'.format(output_file))
 
 def convert2coco_val(caption_json, img_dir):
@@ -60,13 +69,21 @@ def convert2coco_val(caption_json, img_dir):
     coco[u'images'] = list()
     coco[u'annotations'] = list()
 
+    non_existence_count = 0
+
     for ind, sample in enumerate(dataset):
         img = Image.open(os.path.join(imgdir, sample['image_id']))
         width, height = img.size
 
+        path = os.path.split(img_dir)[-1]+'/'+sample['image_id']
+        if not os.path.isfile(path):
+            print('WARN: %s not exists, skip it.' % (path))
+            non_existence_count += 1
+            continue
+
         coco_img = {}
         coco_img[u'license'] = 0
-        coco_img[u'file_name'] = os.path.split(img_dir)[-1]+'/'+sample['image_id']
+        coco_img[u'file_name'] = path
         coco_img[u'width'] = width
         coco_img[u'height'] = height
         coco_img[u'date_captured'] = 0
@@ -95,6 +112,7 @@ def convert2coco_val(caption_json, img_dir):
     output_file = os.path.join(os.path.dirname(caption_json), 'coco_'+os.path.basename(caption_json))
     with open(output_file, 'w') as fid:
         json.dump(coco, fid)
+    print('non_existence_count', non_existence_count)
     print('Saved to {}'.format(output_file))
 
 def convert2coco_eval(caption_json, img_dir):
