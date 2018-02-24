@@ -13,8 +13,6 @@ import sys
 
 def convert2coco(caption_json, img_dir):
     dataset = json.load(open(caption_json, 'r'))
-    imgdir = img_dir
-
     coco = dict()
     coco[u'info'] = { u'desciption':u'AI challenger image caption in mscoco format'}
     coco[u'licenses'] = ['Unknown', 'Unknown']
@@ -24,14 +22,14 @@ def convert2coco(caption_json, img_dir):
     non_existence_count = 0
 
     for ind, sample in enumerate(dataset):
-        img = Image.open(os.path.join(imgdir, sample['image_id']))
-        width, height = img.size
-
-        path = os.path.split(img_dir)[-1]+'/'+sample['image_id']
+        path = os.path.join(img_dir, sample['image_id'])
         if not os.path.isfile(path):
             print('WARN: %s not exists, skip it.' % (path))
             non_existence_count += 1
             continue
+
+        img = Image.open(path)
+        width, height = img.size
 
         coco_img = {}
         coco_img[u'license'] = 0
