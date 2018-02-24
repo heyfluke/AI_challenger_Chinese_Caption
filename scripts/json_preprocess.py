@@ -8,6 +8,8 @@ import argparse
 import json
 from PIL import Image
 import jieba
+import sys
+
 
 def convert2coco(caption_json, img_dir):
     dataset = json.load(open(caption_json, 'r'))
@@ -169,11 +171,11 @@ def convert2coco_test(img_dir):
         json.dump(coco, fid)
     print('Saved to {}'.format(output_file))
 
-def ai_challenger_preprocess():
+def ai_challenger_preprocess(root):
     import os
     import json
-    val = json.load(open('/data/liyuntao/DataSet/ai_challenger_caption_validation_20170910/coco_caption_validation_annotations_20170910.json', 'r'))
-    train = json.load(open('/data/liyuntao/DataSet/ai_challenger_caption_train_20170902/coco_caption_train_annotations_20170902.json', 'r'))
+    val = json.load(open('%s/ai_challenger_caption_validation_20170910/coco_caption_validation_annotations_20170910.json' % root, 'r'))
+    train = json.load(open('%s/ai_challenger_caption_train_20170902/coco_caption_train_annotations_20170902.json' % root, 'r'))
 
     print(val.keys())
     print(val['info'])
@@ -235,15 +237,31 @@ def ai_challenger_preprocess():
         out.append(out_im)
     out_json['images']=out
     out_json['dataset']='ai_challenger'
-    output_file = os.path.join('/data/liyuntao/DataSet', 'coco_ai_challenger.json')
+    output_file = os.path.join(root, 'coco_ai_challenger.json')
     json.dump(out_json, open(output_file, 'w'))
 
+
+def usage():
+    sys.stderr.write('Usage: please use -h option\n')
+    sys.exit(1)
+
 if __name__ == "__main__":
-    train_caption_json = '/data/liyuntao/DataSet/ai_challenger_caption_train_20170902/caption_train_annotations_20170902.json'
-    train_img_dir = '/data/liyuntao/DataSet/ai_challenger_caption_train_20170902/caption_train_images_20170902'
-    val_caption_json = '/data/liyuntao/DataSet/ai_challenger_caption_validation_20170910/caption_validation_annotations_20170910.json'
-    val_img_dir = '/data/liyuntao/DataSet/ai_challenger_caption_validation_20170910/caption_validation_images_20170910'
-    test_img_dir = '/data/liyuntao/DataSet/ai_challenger_caption_test1_20170923/caption_test1_images_20170923'
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--data_root", type=str,
+                        help="root(parent dir) of ai_challenger_caption_train_20170902. a coco_ai_challenger.json will be generated there.")
+    args = parser.parse_args()
+    print('args', args)
+
+    if not args.data_root:
+        usage()
+    root = os.path.expanduser(args.data_root)
+
+    train_caption_json = '%s/ai_challenger_caption_train_20170902/caption_train_annotations_20170902.json' % root
+    train_img_dir = '%s/ai_challenger_caption_train_20170902/caption_train_images_20170902' % root
+    val_caption_json = '%s/ai_challenger_caption_validation_20170910/caption_validation_annotations_20170910.json' % root
+    val_img_dir = '%s/ai_challenger_caption_validation_20170910/caption_validation_images_20170910' % root
+    test_img_dir = '%s/ai_challenger_caption_test1_20170923/caption_test1_images_20170923' % root
     # Convert json (ai challenger) to coco format
     convert2coco(train_caption_json, train_img_dir)
     convert2coco_val(val_caption_json, val_img_dir)
@@ -252,4 +270,4 @@ if __name__ == "__main__":
     # Create json file for evaluation
     convert2coco_eval(val_caption_json, val_img_dir)
     # Create json file for sentence label and image feature extraction
-    ai_challenger_preprocess()
+    ai_challenger_preprocess(root)
